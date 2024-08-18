@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.ui.Ui
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
-import yongjun.sideproject.ui.uiFactory
+import yongjun.sideproject.ui.utils.uiFactory
 
 @Composable
 fun HomeUi(
@@ -25,10 +25,9 @@ fun HomeUi(
                 .padding(innerPadding)
                 .statusBarsPadding(),
         ) {
-            state.standings.forEach {
-                Text(text = it)
+            state.getStandingResponsesAsync()?.forEach {
+                Text(text = it.toString())
             }
-            Text(text = "ehehehe22")
         }
     }
 }

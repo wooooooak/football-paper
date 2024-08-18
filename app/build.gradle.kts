@@ -12,6 +12,8 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        val footballApiKey = project.findProperty("FOOTBALL_API_KEY") as String?
+        buildConfigField("String", "FOOTBALL_API_KEY", "\"$footballApiKey\"")
         applicationId = "yongjun.sideproject"
         minSdk = 30
         targetSdk = 34
@@ -31,6 +33,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -62,6 +65,7 @@ dependencies {
 
     // ktor 추가
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.serialization.kotlinx.json)

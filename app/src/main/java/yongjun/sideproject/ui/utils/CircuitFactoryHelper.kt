@@ -1,4 +1,4 @@
-package yongjun.sideproject.ui
+package yongjun.sideproject.ui.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

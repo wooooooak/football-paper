@@ -1,6 +1,7 @@
 package yongjun.sideproject.data
 
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -21,7 +22,7 @@ import org.koin.core.annotation.Single
 @ComponentScan
 class DataModule {
     @Single
-    fun provideHttpClient(): HttpClient = HttpClient {
+    fun provideHttpClient(): HttpClient = HttpClient(CIO) {
         defaultRequest {
             url("https://api.football-data.org/v4/")
             contentType(ContentType.Application.Json)
@@ -32,7 +33,8 @@ class DataModule {
                 Json {
                     prettyPrint = true
                     ignoreUnknownKeys = true
-                    useAlternativeNames = false
+//                    useAlternativeNames = false
+                    isLenient = true
                 },
             )
             install(HttpTimeout) {

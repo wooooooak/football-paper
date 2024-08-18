@@ -39,9 +39,11 @@ compose-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-pr
 
 # ktor 추가
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
 # Circuit 라이브러리 추가
 circuit_foundation = { module = "com.slack.circuit:circuit-foundation", version.ref = "circuit" }
 circuit_test = { module = "com.slack.circuit:circuit-test", version.ref = "circuit" }
