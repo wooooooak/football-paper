@@ -3,17 +3,202 @@ package yongjun.sideproject.domain.mock
 import yongjun.sideproject.domain.model.Area
 import yongjun.sideproject.domain.model.Competition
 import yongjun.sideproject.domain.model.Filters
+import yongjun.sideproject.domain.model.FullTime
+import yongjun.sideproject.domain.model.HalfTime
+import yongjun.sideproject.domain.model.Match
+import yongjun.sideproject.domain.model.MatchResponse
+import yongjun.sideproject.domain.model.Odds
+import yongjun.sideproject.domain.model.ResultSet
+import yongjun.sideproject.domain.model.Score
 import yongjun.sideproject.domain.model.Season
 import yongjun.sideproject.domain.model.Standing
 import yongjun.sideproject.domain.model.StandingResponse
 import yongjun.sideproject.domain.model.Table
 import yongjun.sideproject.domain.model.Team
 
-object StandingResponseMock {
+object ResponseMock {
+    val matchResponseMock: MatchResponse by lazy {
+        MatchResponse(
+            filters = Filters(season = "2024", matchday = "1"),
+            resultSet = ResultSet(
+                count = 7,
+                first = "2024-08-16",
+                last = "2024-08-19",
+                played = 3432,
+            ),
+            competition = Competition(
+                id = 6752,
+                name = "Premier League",
+                code = "volutpat",
+                type = "League",
+                emblem = "https://crests.football-data.org/PL.png",
+            ),
+            matches = listOf(
+                Match(
+                    area = Area(
+                        id = 9698,
+                        name = "Matilda Ewing",
+                        code = "malesuada",
+                        flag = "porta",
+                    ),
+                    competition = Competition(
+                        id = 8053,
+                        name = "Christina Schwartz",
+                        code = "expetenda",
+                        type = "reprimique",
+                        emblem = "definitionem",
+                    ),
+                    season = Season(
+                        id = 8816,
+                        startDate = "regione",
+                        endDate = "tota",
+                        currentMatchday = 7461,
+                        winner = null,
+                        stages = listOf(),
+                    ),
+                    id = 6203,
+                    utcDate = "ludus",
+                    status = "FINISHED",
+                    matchday = 1,
+                    stage = "ne",
+                    group = null,
+                    lastUpdated = "ante",
+                    homeTeam = Team(
+                        id = 1993,
+                        name = "Reggie Pennington",
+                        shortName = "Mona Fitzpatrick",
+                        tla = "scelerisque",
+                        crest = "auctor",
+                    ),
+                    awayTeam = Team(
+                        id = 2121,
+                        name = "Nettie Payne",
+                        shortName = "Jarrett Meyer",
+                        tla = "maiestatis",
+                        crest = "postea",
+                    ),
+                    score = Score(
+                        winner = "AWAY_TEAM",
+                        duration = "sapientem",
+                        fullTime = FullTime(home = 1, away = 2),
+                        halfTime = HalfTime(home = 0, away = 0),
+                    ),
+                    odds = Odds(msg = "senserit"),
+                    referees = listOf(),
+                ),
+                Match(
+                    area = Area(
+                        id = 9699,
+                        name = "Matilda Ewing",
+                        code = "malesuada",
+                        flag = "porta",
+                    ),
+                    competition = Competition(
+                        id = 8053,
+                        name = "Christina Schwartz",
+                        code = "expetenda",
+                        type = "reprimique",
+                        emblem = "definitionem",
+                    ),
+                    season = Season(
+                        id = 8816,
+                        startDate = "regione",
+                        endDate = "tota",
+                        currentMatchday = 7461,
+                        winner = null,
+                        stages = listOf(),
+                    ),
+                    id = 6204,
+                    utcDate = "ludus",
+                    status = "IN_PLAY",
+                    matchday = 1,
+                    stage = "ne",
+                    group = null,
+                    lastUpdated = "ante",
+                    homeTeam = Team(
+                        id = 1994,
+                        name = "Reggie Pennington",
+                        shortName = "Mona Fitzpatrick",
+                        tla = "scelerisque",
+                        crest = "auctor",
+                    ),
+                    awayTeam = Team(
+                        id = 2122,
+                        name = "Nettie Payne",
+                        shortName = "Jarrett Meyer",
+                        tla = "maiestatis",
+                        crest = "postea",
+                    ),
+                    score = Score(
+                        winner = null,
+                        duration = "sapientem",
+                        fullTime = FullTime(home = 1, away = 2),
+                        halfTime = HalfTime(home = 0, away = 0),
+                    ),
+                    odds = Odds(msg = "senserit"),
+                    referees = listOf(),
+                ),
+                Match(
+                    area = Area(
+                        id = 9698,
+                        name = "Matilda Ewing",
+                        code = "malesuada",
+                        flag = "porta",
+                    ),
+                    competition = Competition(
+                        id = 8053,
+                        name = "Christina Schwartz",
+                        code = "expetenda",
+                        type = "reprimique",
+                        emblem = "definitionem",
+                    ),
+                    season = Season(
+                        id = 8816,
+                        startDate = "regione",
+                        endDate = "tota",
+                        currentMatchday = 1,
+                        winner = null,
+                        stages = listOf(),
+                    ),
+                    id = 6204,
+                    utcDate = "ludus",
+                    status = "TIMED",
+                    matchday = 1,
+                    stage = "ne",
+                    group = null,
+                    lastUpdated = "ante",
+                    homeTeam = Team(
+                        id = 1993,
+                        name = "Reggie Pennington",
+                        shortName = "Mona Fitzpatrick",
+                        tla = "scelerisque",
+                        crest = "auctor",
+                    ),
+                    awayTeam = Team(
+                        id = 2121,
+                        name = "Nettie Payne",
+                        shortName = "Jarrett Meyer",
+                        tla = "maiestatis",
+                        crest = "postea",
+                    ),
+                    score = Score(
+                        winner = null,
+                        duration = "sapientem",
+                        fullTime = FullTime(home = 1, away = 2),
+                        halfTime = HalfTime(home = 0, away = 0),
+                    ),
+                    odds = Odds(msg = "senserit"),
+                    referees = listOf(),
+                ),
+            ),
+
+            )
+    }
+
     val standingResponsesMock: List<StandingResponse> by lazy {
         listOf(
             StandingResponse(
-                filters = Filters(season = "2024"),
+                filters = Filters(season = "2024", matchday = null),
                 area = Area(
                     id = 1763,
                     name = "England",
@@ -126,7 +311,7 @@ object StandingResponseMock {
                 ),
             ),
             StandingResponse(
-                filters = Filters(season = "2024"),
+                filters = Filters(season = "2024", null),
                 area = Area(
                     id = 1763,
                     name = "England",
@@ -220,7 +405,7 @@ object StandingResponseMock {
                 ),
             ),
             StandingResponse(
-                filters = Filters(season = "2024"),
+                filters = Filters(season = "2024", null),
                 area = Area(
                     id = 1233,
                     name = "Gemani",

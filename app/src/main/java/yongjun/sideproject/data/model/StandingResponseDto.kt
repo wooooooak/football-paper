@@ -21,57 +21,6 @@ data class StandingResponseDto(
 )
 
 @Serializable
-data class FiltersDto(
-    @SerialName("season") val season: String,
-)
-
-@Serializable
-data class AreaDto(
-    @SerialName("id") val id: Int,
-    @SerialName("name") val name: String,
-    @SerialName("code") val code: String,
-    // 국기 png url
-    @SerialName("flag") val flag: String,
-)
-
-/**
- * 대회 정보
- */
-@Serializable
-data class CompetitionDto(
-    @SerialName("id") val id: Int,
-    // 대회 이름. 예) Premier League
-    @SerialName("name") val name: String,
-    // 대회 코드. 예) PL
-    @SerialName("code") val code: String,
-    // 리그 or 컵대회 등등
-    @SerialName("type") val type: String,
-    // 대회 엠블런 png url
-    @SerialName("emblem") val emblem: String,
-)
-
-@Serializable
-data class SeasonDto(
-    @SerialName("id") val id: Int,
-    @SerialName("startDate") val startDate: String,
-    @SerialName("endDate") val endDate: String,
-    @SerialName("currentMatchday") val currentMatchday: Int,
-    @SerialName("winner") val winner: String?,
-    @SerialName("stages") val stages: List<String>? = emptyList(),
-)
-
-@Serializable
-data class TeamDto(
-    @SerialName("id") val id: Int,
-    @SerialName("name") val name: String,
-    @SerialName("shortName") val shortName: String,
-    // 팀 명 약자. 예) MCI, LIV,
-    @SerialName("tla") val tla: String,
-    // 팀 로고 png url
-    @SerialName("crest") val crest: String,
-)
-
-@Serializable
 data class TableDto(
     // 순위
     @SerialName("position") val position: Int,
@@ -100,6 +49,7 @@ fun StandingResponseDto.toDomain(): StandingResponse =
     StandingResponse(
         filters = Filters(
             season = filters.season,
+            matchday = null,
         ),
         area = Area(id = area.id, name = area.name, code = area.code, flag = area.flag),
         competition = Competition(
