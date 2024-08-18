@@ -75,6 +75,10 @@ dependencies {
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.serialization.kotlinx.json)
 
+    // coil 추가
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
+
     // Compose 라이브러리 추가
     implementation(libs.compose.ui)
     implementation(libs.compose.material)

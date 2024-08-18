@@ -38,7 +38,8 @@ class DataModule {
             )
         }
         install(HttpTimeout) {
-            requestTimeoutMillis = 10000
+            requestTimeoutMillis = 20000
+            connectTimeoutMillis = 10000
         }
         install(Logging) {
             logger = Logger.DEFAULT

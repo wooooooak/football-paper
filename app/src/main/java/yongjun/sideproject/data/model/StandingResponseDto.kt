@@ -6,8 +6,8 @@ import yongjun.sideproject.domain.model.Area
 import yongjun.sideproject.domain.model.Competition
 import yongjun.sideproject.domain.model.Filters
 import yongjun.sideproject.domain.model.Season
+import yongjun.sideproject.domain.model.Standing
 import yongjun.sideproject.domain.model.StandingResponse
-import yongjun.sideproject.domain.model.Standings
 import yongjun.sideproject.domain.model.Table
 import yongjun.sideproject.domain.model.Team
 
@@ -118,7 +118,7 @@ fun StandingResponseDto.toDomain(): StandingResponse =
             stages = season.stages,
         ),
         standings = standings.map {
-            Standings(
+            Standing(
                 stage = it.stage,
                 type = it.type,
                 tables = it.tables.map { table ->

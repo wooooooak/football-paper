@@ -17,13 +17,12 @@ class GetStandingsResponseListUseCase(
     private val footballRepository: FootballRepository,
 ) {
     suspend operator fun invoke(): List<StandingResponse> = coroutineScope {
-        val deferreds = COMPETITION_CODES.map { code ->
+        val deferredList = COMPETITION_CODES.map { code ->
             async { footballRepository.getStandingsResponse(code) }
         }
-        val standingResponses = deferreds.awaitAll()
+        val standingResponses = deferredList.awaitAll()
         standingResponses
     }
 }
 
-private val COMPETITION_CODES = listOf("PL")
-//private val COMPETITION_CODES = listOf("PL", "BL1", "PD", "FL1")
+private val COMPETITION_CODES = listOf("PL", "BL1", "PD", "FL1")

@@ -7,8 +7,10 @@ data class StandingResponse(
     val area: Area,
     val competition: Competition,
     val season: Season,
-    val standings: List<Standings>,
-)
+    val standings: List<Standing>,
+) {
+    val totalStanding = standings.first { it.type == "TOTAL" }
+}
 
 @Serializable
 data class Filters(
@@ -79,7 +81,7 @@ data class Table(
 )
 
 @Serializable
-data class Standings(
+data class Standing(
     val stage: String,
     // TOTAL, HOME, AWAY
     val type: String,
