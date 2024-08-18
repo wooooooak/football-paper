@@ -51,7 +51,6 @@ import yongjun.sideproject.domain.model.StandingResponse
 import yongjun.sideproject.domain.model.Table
 import yongjun.sideproject.ui.utils.Success
 import yongjun.sideproject.ui.utils.uiFactory
-import java.util.Calendar
 
 @Composable
 fun HomeUi(
@@ -92,10 +91,11 @@ private fun StandingsSection(
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val primaryColor = Color(0xffff8787)
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colors.primary),
+            .background(primaryColor),
     ) {
         val selectedTabIndex = remember { mutableIntStateOf(0) }
         val competitions = standingsResponses.map { it.competition }
@@ -111,6 +111,7 @@ private fun StandingsSection(
                 .statusBarsPadding()
                 .fillMaxWidth()
                 .heightIn(min = 50.dp),
+            backgroundColor = primaryColor,
             selectedTabIndex = selectedTabIndex.intValue,
         ) {
             competitions.forEachIndexed { index, competition ->
@@ -191,6 +192,7 @@ private fun Table(
         1 -> Color(0xfffd7e14)
         2 -> Color(0xffffa94d)
         3 -> Color(0xffffc078)
+        4 -> Color(0xffffe8cc)
         else -> MaterialTheme.colors.surface
     }
     Card(
@@ -287,7 +289,7 @@ private fun Preview() {
         HomeUi(
             state = HomeScreen.State(
                 getStandingResponsesAsync = Success(StandingResponseMock.standingResponsesMock),
-                lastUpdatedAt = Calendar.getInstance().time.toString(),
+                lastUpdatedAt = "dd일 HH시 mm분",
                 eventSink = {},
             ),
         )
