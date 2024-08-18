@@ -21,7 +21,6 @@ import yongjun.sideproject.ui.utils.Uninitialized
 import yongjun.sideproject.ui.utils.execute
 import yongjun.sideproject.ui.utils.presenterFactory
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomePresenter(
@@ -33,7 +32,7 @@ fun HomePresenter(
         mutableStateOf(Uninitialized)
     }
 
-    var lastUpdatedAt: String? by rememberRetained {
+    var lastUpdatedAt: LocalDateTime? by rememberRetained {
         mutableStateOf(null)
     }
 
@@ -43,9 +42,7 @@ fun HomePresenter(
             .execute(coroutineScope) { async ->
                 getStandingResponsesAsync = async
                 if (async is Success) {
-                    val current = LocalDateTime.now()
-                    val formatter = DateTimeFormatter.ofPattern("dd일 HH시 mm분")
-                    lastUpdatedAt = current.format(formatter)
+                    lastUpdatedAt = LocalDateTime.now()
                 }
             }
     }

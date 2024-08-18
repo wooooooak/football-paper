@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.compose.activity)
+    implementation(libs.androidx.lifecycle.compose)
     implementation(libs.slf4j.android)
 
     // ktor 추가
@@ -83,7 +84,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.material)
     implementation(libs.compose.tooling)
-// or skip Material Design and build directly on top of foundational components
+    // or skip Material Design and build directly on top of foundational components
     implementation(libs.compose.foundation)
     implementation(libs.compose.tooling.preview)
 

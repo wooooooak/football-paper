@@ -41,8 +41,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleStartEffect
 import coil.compose.AsyncImage
 import com.slack.circuit.runtime.ui.Ui
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
@@ -51,6 +53,9 @@ import yongjun.sideproject.domain.model.StandingResponse
 import yongjun.sideproject.domain.model.Table
 import yongjun.sideproject.ui.utils.Success
 import yongjun.sideproject.ui.utils.uiFactory
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomeUi(
@@ -65,6 +70,7 @@ fun HomeUi(
             StandingsSection(
                 standingsResponses = standingResponses,
                 lastUpdatedAt = state.lastUpdatedAt,
+                onRefresh = { state.eventSink(HomeScreen.Event.RetryClick) },
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
@@ -86,9 +92,10 @@ fun HomeUi(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun StandingsSection(
-    lastUpdatedAt: String?,
+    lastUpdatedAt: LocalDateTime?,
     standingsResponses: List<StandingResponse>,
     modifier: Modifier = Modifier,
+    onRefresh: () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
     val primaryColor = Color(0xffff8787)
@@ -106,6 +113,23 @@ private fun StandingsSection(
         LaunchedEffect(pagerState.targetPage) {
             selectedTabIndex.intValue = pagerState.targetPage
         }
+
+        if (lastUpdatedAt != null) {
+            LifecycleStartEffect(lastUpdatedAt) {
+                coroutineScope.launch {
+                    while (true) {
+                        delay(60 * 1000L)
+                        val current = LocalDateTime.now()
+                        val minDifference = Duration.between(lastUpdatedAt, current).toMinutes()
+                        if (minDifference > 30) {
+                            onRefresh()
+                        }
+                    }
+                }
+                onStopOrDispose { }
+            }
+        }
+
         TabRow(
             modifier = Modifier
                 .statusBarsPadding()
@@ -146,15 +170,19 @@ private fun StandingsSection(
 
 @Composable
 private fun LastUpdateSection(
-    lastUpdatedAt: String,
+    lastUpdatedAt: LocalDateTime,
     modifier: Modifier = Modifier,
 ) {
+    val formatted = remember(lastUpdatedAt) {
+        val formatter = DateTimeFormatter.ofPattern("dd일 HH시 mm분")
+        lastUpdatedAt.format(formatter)
+    }
     Text(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colors.surface)
             .padding(top = 4.dp, end = 8.dp),
-        text = lastUpdatedAt,
+        text = formatted,
         textAlign = TextAlign.End,
     )
 }
@@ -289,7 +317,7 @@ private fun Preview() {
         HomeUi(
             state = HomeScreen.State(
                 getStandingResponsesAsync = Success(StandingResponseMock.standingResponsesMock),
-                lastUpdatedAt = "dd일 HH시 mm분",
+                lastUpdatedAt = LocalDateTime.now(),
                 eventSink = {},
             ),
         )
