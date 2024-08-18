@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
@@ -20,7 +21,9 @@ import yongjun.sideproject.ui.utils.Success
 import yongjun.sideproject.ui.utils.Uninitialized
 import yongjun.sideproject.ui.utils.execute
 import yongjun.sideproject.ui.utils.presenterFactory
+import java.time.Duration
 import java.time.LocalDateTime
+import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun HomePresenter(
@@ -50,8 +53,24 @@ fun HomePresenter(
             }
     }
 
-    LaunchedEffect(Unit) {
-        fetch()
+    /**
+     * Home 화면 진입시마다 LaunchedEffect는 수행된다.
+     * 단, 매번 API를 호출하는건 API 호출수에 악영향을 미치므로
+     * lastUpdate 후 30분 뒤에만 재호출을 하도록 한다.
+     */
+    LaunchedEffect(lastUpdatedAt) {
+        if (lastUpdatedAt == null) {
+            fetch()
+        } else {
+            while (true) {
+                delay(1.minutes)
+                val current = LocalDateTime.now()
+                val minDifference = Duration.between(lastUpdatedAt, current).toMinutes()
+                if (minDifference >= 30) {
+                    fetch()
+                }
+            }
+        }
     }
 
     return HomeScreen.State(
@@ -60,6 +79,7 @@ fun HomePresenter(
     ) { event ->
         when (event) {
             HomeScreen.Event.RetryClick -> fetch()
+            is HomeScreen.Event.GoTo -> navigator.goTo(event.screen)
         }
     }
 }

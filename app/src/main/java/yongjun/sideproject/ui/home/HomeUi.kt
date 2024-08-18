@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
@@ -43,25 +44,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.LifecycleStartEffect
 import coil.compose.AsyncImage
 import com.slack.circuit.runtime.ui.Ui
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
-import yongjun.sideproject.domain.mock.StandingResponseMock
+import yongjun.sideproject.domain.mock.ResponseMock
 import yongjun.sideproject.domain.model.StandingResponse
 import yongjun.sideproject.domain.model.Table
+import yongjun.sideproject.ui.match.MatchScreen
 import yongjun.sideproject.ui.utils.Fail
 import yongjun.sideproject.ui.utils.Loading
 import yongjun.sideproject.ui.utils.Success
 import yongjun.sideproject.ui.utils.Uninitialized
 import yongjun.sideproject.ui.utils.uiFactory
-import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun HomeUi(
@@ -80,6 +78,13 @@ fun HomeUi(
                     standingsResponses = standingResponses,
                     lastUpdatedAt = state.lastUpdatedAt,
                     onRefresh = { state.eventSink(HomeScreen.Event.RetryClick) },
+                    onGoToMatchClick = { competitionId, matchDay ->
+                        state.eventSink(
+                            HomeScreen.Event.GoTo(
+                                MatchScreen(competitionId, matchDay),
+                            ),
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
@@ -115,72 +120,75 @@ private fun StandingsSection(
     standingsResponses: List<StandingResponse>,
     modifier: Modifier = Modifier,
     onRefresh: () -> Unit = {},
+    onGoToMatchClick: (competitionId: Int, matchDay: Int) -> Unit = { _, _ -> },
 ) {
     val coroutineScope = rememberCoroutineScope()
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(primaryColor),
-    ) {
-        val selectedTabIndex = remember { mutableIntStateOf(0) }
-        val competitions = standingsResponses.map { it.competition }
+    Box(modifier = modifier.fillMaxSize()) {
         val pagerState = rememberPagerState(
             initialPage = 0,
             pageCount = { standingsResponses.size },
         )
-        LaunchedEffect(pagerState.targetPage) {
-            selectedTabIndex.intValue = pagerState.targetPage
-        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(primaryColor),
+        ) {
+            val selectedTabIndex = remember { mutableIntStateOf(0) }
+            val competitions = standingsResponses.map { it.competition }
+            LaunchedEffect(pagerState.targetPage) {
+                selectedTabIndex.intValue = pagerState.targetPage
+            }
 
-        if (lastUpdatedAt != null) {
-            LifecycleStartEffect(lastUpdatedAt) {
-                coroutineScope.launch {
-                    while (true) {
-                        delay(1.minutes)
-                        val current = LocalDateTime.now()
-                        val minDifference = Duration.between(lastUpdatedAt, current).toMinutes()
-                        if (minDifference >= 30) {
-                            onRefresh()
-                        }
+            TabRow(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .fillMaxWidth()
+                    .heightIn(min = 50.dp),
+                backgroundColor = primaryColor,
+                selectedTabIndex = selectedTabIndex.intValue,
+            ) {
+                competitions.forEachIndexed { index, competition ->
+                    Tab(
+                        selected = selectedTabIndex.intValue == index,
+                        onClick = {
+                            coroutineScope.launch {
+                                pagerState.scrollToPage(index)
+                                selectedTabIndex.intValue = index
+                            }
+                        },
+                    ) {
+                        Text(text = competition.code)
                     }
                 }
-                onStopOrDispose { }
             }
+
+            lastUpdatedAt?.let {
+                LastUpdateSection(lastUpdatedAt = it)
+            }
+
+            HorizontalPager(
+                modifier = Modifier.fillMaxSize(),
+                state = pagerState,
+            ) { page ->
+                TablesSection(
+                    tables = standingsResponses[page].totalStanding.tables,
+                )
+            }
+
         }
 
-        TabRow(
+        val currentStanding = standingsResponses[pagerState.targetPage]
+        val currentMatchDay = standingsResponses[pagerState.targetPage].season.currentMatchday
+        FloatingActionButton(
             modifier = Modifier
-                .statusBarsPadding()
-                .fillMaxWidth()
-                .heightIn(min = 50.dp),
-            backgroundColor = primaryColor,
-            selectedTabIndex = selectedTabIndex.intValue,
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .padding(bottom = 20.dp, end = 20.dp),
+            onClick = { onGoToMatchClick(currentStanding.competition.id, currentMatchDay) },
         ) {
-            competitions.forEachIndexed { index, competition ->
-                Tab(
-                    selected = selectedTabIndex.intValue == index,
-                    onClick = {
-                        coroutineScope.launch {
-                            pagerState.scrollToPage(index)
-                            selectedTabIndex.intValue = index
-                        }
-                    },
-                ) {
-                    Text(text = competition.code)
-                }
-            }
-        }
-
-        lastUpdatedAt?.let {
-            LastUpdateSection(lastUpdatedAt = it)
-        }
-
-        HorizontalPager(
-            modifier = Modifier.fillMaxSize(),
-            state = pagerState,
-        ) { page ->
-            TablesSection(
-                tables = standingsResponses[page].totalStanding.tables,
+            Text(
+                modifier = Modifier.padding(horizontal = 15.dp),
+                text = "match $currentMatchDay",
             )
         }
     }
@@ -216,7 +224,7 @@ private fun TablesSection(
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 20.dp),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 30.dp),
     ) {
         items(
             items = tables,
@@ -335,7 +343,7 @@ private fun Preview() {
     MaterialTheme {
         HomeUi(
             state = HomeScreen.State(
-                getStandingResponsesAsync = Success(StandingResponseMock.standingResponsesMock),
+                getStandingResponsesAsync = Success(ResponseMock.standingResponsesMock),
                 lastUpdatedAt = LocalDateTime.now(),
                 eventSink = {},
             ),

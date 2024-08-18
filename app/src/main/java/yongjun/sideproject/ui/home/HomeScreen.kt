@@ -20,6 +20,7 @@ data object HomeScreen : Screen, Parcelable {
 
     sealed interface Event : CircuitUiEvent {
         data object RetryClick : Event
+        data class GoTo(val screen: Screen) : Event
     }
 
 }
