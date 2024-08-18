@@ -184,6 +184,7 @@ private fun StandingsSection(
                 .align(Alignment.BottomEnd)
                 .navigationBarsPadding()
                 .padding(bottom = 20.dp, end = 20.dp),
+            backgroundColor = MaterialTheme.colors.secondary.copy(0.7f),
             onClick = { onGoToMatchClick(currentStanding.competition.id, currentMatchDay) },
         ) {
             Text(
@@ -224,7 +225,7 @@ private fun TablesSection(
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(top = 8.dp, bottom = 30.dp),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 50.dp),
     ) {
         items(
             items = tables,
