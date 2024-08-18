@@ -12,6 +12,7 @@ import yongjun.sideproject.ui.utils.Async
 @Parcelize
 data object HomeScreen : Screen, Parcelable {
     data class State(
+        val lastUpdatedAt: String?,
         val getStandingResponsesAsync: Async<List<StandingResponse>>,
         val eventSink: (Event) -> Unit = {},
     ) : CircuitUiState

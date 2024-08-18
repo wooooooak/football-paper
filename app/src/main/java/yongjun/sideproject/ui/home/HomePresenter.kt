@@ -16,9 +16,12 @@ import yongjun.sideproject.domain.model.StandingResponse
 import yongjun.sideproject.domain.usecase.GetStandingsResponseListUseCase
 import yongjun.sideproject.ui.utils.Async
 import yongjun.sideproject.ui.utils.Loading
+import yongjun.sideproject.ui.utils.Success
 import yongjun.sideproject.ui.utils.Uninitialized
 import yongjun.sideproject.ui.utils.execute
 import yongjun.sideproject.ui.utils.presenterFactory
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomePresenter(
@@ -30,11 +33,20 @@ fun HomePresenter(
         mutableStateOf(Uninitialized)
     }
 
+    var lastUpdatedAt: String? by rememberRetained {
+        mutableStateOf(null)
+    }
+
     fun fetch() {
         if (getStandingResponsesAsync is Loading) return
         suspend { getStandingsResponseListUseCase() }
             .execute(coroutineScope) { async ->
                 getStandingResponsesAsync = async
+                if (async is Success) {
+                    val current = LocalDateTime.now()
+                    val formatter = DateTimeFormatter.ofPattern("dd일 HH시 mm분")
+                    lastUpdatedAt = current.format(formatter)
+                }
             }
     }
 
@@ -43,6 +55,7 @@ fun HomePresenter(
     }
 
     return HomeScreen.State(
+        lastUpdatedAt = lastUpdatedAt,
         getStandingResponsesAsync = getStandingResponsesAsync,
     ) { event ->
         when (event) {

@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,7 @@ import yongjun.sideproject.domain.model.StandingResponse
 import yongjun.sideproject.domain.model.Table
 import yongjun.sideproject.ui.utils.Success
 import yongjun.sideproject.ui.utils.uiFactory
+import java.util.Calendar
 
 @Composable
 fun HomeUi(
@@ -63,6 +65,7 @@ fun HomeUi(
         if (standingResponses != null) {
             StandingsSection(
                 standingsResponses = standingResponses,
+                lastUpdatedAt = state.lastUpdatedAt,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
@@ -84,6 +87,7 @@ fun HomeUi(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun StandingsSection(
+    lastUpdatedAt: String?,
     standingsResponses: List<StandingResponse>,
     modifier: Modifier = Modifier,
 ) {
@@ -124,6 +128,10 @@ private fun StandingsSection(
             }
         }
 
+        lastUpdatedAt?.let {
+            LastUpdateSection(lastUpdatedAt = it)
+        }
+
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
             state = pagerState,
@@ -136,6 +144,21 @@ private fun StandingsSection(
 }
 
 @Composable
+private fun LastUpdateSection(
+    lastUpdatedAt: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colors.surface)
+            .padding(top = 4.dp, end = 8.dp),
+        text = lastUpdatedAt,
+        textAlign = TextAlign.End,
+    )
+}
+
+@Composable
 private fun TablesSection(
     tables: List<Table>,
     modifier: Modifier = Modifier,
@@ -145,7 +168,7 @@ private fun TablesSection(
             .fillMaxSize()
             .background(MaterialTheme.colors.background),
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(vertical = 20.dp),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 20.dp),
     ) {
         items(
             items = tables,
@@ -264,6 +287,7 @@ private fun Preview() {
         HomeUi(
             state = HomeScreen.State(
                 getStandingResponsesAsync = Success(StandingResponseMock.standingResponsesMock),
+                lastUpdatedAt = Calendar.getInstance().time.toString(),
                 eventSink = {},
             ),
         )
