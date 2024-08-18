@@ -39,7 +39,10 @@ fun HomePresenter(
     fun fetch() {
         if (getStandingResponsesAsync is Loading) return
         suspend { getStandingsResponseListUseCase() }
-            .execute(coroutineScope) { async ->
+            .execute(
+                coroutineScope = coroutineScope,
+                getRetainedValue = { getStandingResponsesAsync() },
+            ) { async ->
                 getStandingResponsesAsync = async
                 if (async is Success) {
                     lastUpdatedAt = LocalDateTime.now()

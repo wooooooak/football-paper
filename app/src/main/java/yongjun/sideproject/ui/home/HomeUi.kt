@@ -3,6 +3,7 @@ package yongjun.sideproject.ui.home
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Tab
@@ -51,11 +53,15 @@ import org.koin.core.annotation.Named
 import yongjun.sideproject.domain.mock.StandingResponseMock
 import yongjun.sideproject.domain.model.StandingResponse
 import yongjun.sideproject.domain.model.Table
+import yongjun.sideproject.ui.utils.Fail
+import yongjun.sideproject.ui.utils.Loading
 import yongjun.sideproject.ui.utils.Success
+import yongjun.sideproject.ui.utils.Uninitialized
 import yongjun.sideproject.ui.utils.uiFactory
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun HomeUi(
@@ -65,24 +71,36 @@ fun HomeUi(
     Scaffold(
         modifier = modifier,
     ) { innerPadding ->
+        val primaryColor = Color(0xffff8787)
         val standingResponses = state.getStandingResponsesAsync()
-        if (standingResponses != null) {
-            StandingsSection(
-                standingsResponses = standingResponses,
-                lastUpdatedAt = state.lastUpdatedAt,
-                onRefresh = { state.eventSink(HomeScreen.Event.RetryClick) },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-            )
-        } else {
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .statusBarsPadding(),
-            ) {
-                Button(onClick = { state.eventSink(HomeScreen.Event.RetryClick) }) {
-                    Text(text = "retry!!!!!")
+        when {
+            standingResponses != null -> {
+                StandingsSection(
+                    primaryColor = primaryColor,
+                    standingsResponses = standingResponses,
+                    lastUpdatedAt = state.lastUpdatedAt,
+                    onRefresh = { state.eventSink(HomeScreen.Event.RetryClick) },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                )
+            }
+
+            state.getStandingResponsesAsync is Fail -> {
+                Column(
+                    modifier = modifier
+                        .padding(innerPadding)
+                        .statusBarsPadding(),
+                ) {
+                    Button(onClick = { state.eventSink(HomeScreen.Event.RetryClick) }) {
+                        Text(text = "retry!!!!!")
+                    }
+                }
+            }
+
+            state.getStandingResponsesAsync is Loading || state.getStandingResponsesAsync == Uninitialized -> {
+                Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = primaryColor)
                 }
             }
         }
@@ -92,13 +110,13 @@ fun HomeUi(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun StandingsSection(
+    primaryColor: Color,
     lastUpdatedAt: LocalDateTime?,
     standingsResponses: List<StandingResponse>,
     modifier: Modifier = Modifier,
     onRefresh: () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val primaryColor = Color(0xffff8787)
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -118,10 +136,10 @@ private fun StandingsSection(
             LifecycleStartEffect(lastUpdatedAt) {
                 coroutineScope.launch {
                     while (true) {
-                        delay(60 * 1000L)
+                        delay(1.minutes)
                         val current = LocalDateTime.now()
                         val minDifference = Duration.between(lastUpdatedAt, current).toMinutes()
-                        if (minDifference > 30) {
+                        if (minDifference >= 30) {
                             onRefresh()
                         }
                     }
@@ -182,8 +200,9 @@ private fun LastUpdateSection(
             .fillMaxWidth()
             .background(MaterialTheme.colors.surface)
             .padding(top = 4.dp, end = 8.dp),
-        text = formatted,
+        text = "마지막 요청 : $formatted",
         textAlign = TextAlign.End,
+        fontSize = 12.sp,
     )
 }
 
