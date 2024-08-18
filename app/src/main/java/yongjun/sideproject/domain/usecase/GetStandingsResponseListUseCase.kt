@@ -25,5 +25,5 @@ class GetStandingsResponseListUseCase(
     }
 }
 
-private val COMPETITION_CODES = listOf("PL", "BL1")
+private val COMPETITION_CODES = listOf("PL")
 //private val COMPETITION_CODES = listOf("PL", "BL1", "PD", "FL1")

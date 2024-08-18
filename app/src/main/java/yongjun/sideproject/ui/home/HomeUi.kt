@@ -3,6 +3,7 @@ package yongjun.sideproject.ui.home
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,9 @@ fun HomeUi(
         ) {
             state.getStandingResponsesAsync()?.forEach {
                 Text(text = it.toString())
+            }
+            Button(onClick = { state.eventSink(HomeScreen.Event.RetryClick) }) {
+                Text(text = "retry!!!!!")
             }
         }
     }

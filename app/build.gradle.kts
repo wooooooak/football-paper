@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -12,8 +14,8 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        val footballApiKey = project.findProperty("FOOTBALL_API_KEY") as String?
-        buildConfigField("String", "FOOTBALL_API_KEY", "\"$footballApiKey\"")
+
+        buildConfigField("String", "FOOTBALL_API_KEY", getApiKey("FOOTBALL_API_KEY"))
         applicationId = "yongjun.sideproject"
         minSdk = 30
         targetSdk = 34
@@ -53,7 +55,9 @@ android {
         jvmTarget = "1.8"
     }
 }
-
+fun getApiKey(propertyKey: String): String {
+    return gradleLocalProperties(rootDir, providers).getProperty(propertyKey)
+}
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -62,6 +66,7 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.compose.activity)
+    implementation(libs.slf4j.android)
 
     // ktor 추가
     implementation(libs.ktor.client.core)

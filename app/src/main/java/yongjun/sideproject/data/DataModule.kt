@@ -33,17 +33,16 @@ class DataModule {
                 Json {
                     prettyPrint = true
                     ignoreUnknownKeys = true
-//                    useAlternativeNames = false
-                    isLenient = true
+                    useAlternativeNames = false
                 },
             )
-            install(HttpTimeout) {
-                requestTimeoutMillis = 10000
-            }
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.ALL
-            }
+        }
+        install(HttpTimeout) {
+            requestTimeoutMillis = 10000
+        }
+        install(Logging) {
+            logger = Logger.DEFAULT
+            level = LogLevel.ALL
         }
     }
 }

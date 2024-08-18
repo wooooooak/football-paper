@@ -57,7 +57,7 @@ data class SeasonDto(
     @SerialName("endDate") val endDate: String,
     @SerialName("currentMatchday") val currentMatchday: Int,
     @SerialName("winner") val winner: String?,
-    @SerialName("stages") val stages: List<String>?,
+    @SerialName("stages") val stages: List<String>? = emptyList(),
 )
 
 @Serializable
@@ -78,7 +78,7 @@ data class TableDto(
     @SerialName("team") val team: TeamDto,
     @SerialName("playedGames") val playedGames: Int,
     // 최근 5경기 승패 유무. 예) D, W, W, W, W
-    @SerialName("form") val form: String,
+    @SerialName("form") val form: String?,
     @SerialName("won") val won: Int,
     @SerialName("draw") val draw: Int,
     @SerialName("lost") val lost: Int,

@@ -30,17 +30,25 @@ fun HomePresenter(
         mutableStateOf(Uninitialized)
     }
 
-    LaunchedEffect(Unit) {
-        if (getStandingResponsesAsync is Loading) return@LaunchedEffect
+    fun fetch() {
+        if (getStandingResponsesAsync is Loading) return
         suspend { getStandingsResponseListUseCase() }
             .execute(coroutineScope) { async ->
                 getStandingResponsesAsync = async
             }
     }
 
+    LaunchedEffect(Unit) {
+        fetch()
+    }
+
     return HomeScreen.State(
         getStandingResponsesAsync = getStandingResponsesAsync,
-    )
+    ) { event ->
+        when (event) {
+            HomeScreen.Event.RetryClick -> fetch()
+        }
+    }
 }
 
 @Named("Home")

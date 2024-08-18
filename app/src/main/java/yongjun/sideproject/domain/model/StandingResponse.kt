@@ -68,7 +68,7 @@ data class Table(
     val team: Team,
     val playedGames: Int,
     // 최근 5경기 승패 유무. 예) D, W, W, W, W
-    val form: String,
+    val form: String?,
     val won: Int,
     val draw: Int,
     val lost: Int,
