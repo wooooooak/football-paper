@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
@@ -26,6 +27,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -128,33 +130,50 @@ private fun MatchBodySection(
     matchResponses: List<MatchResponse>,
     modifier: Modifier = Modifier,
 ) {
+//    val (firstVisibleMatch, firstVisibleIndex) = remember(matchResponses) {
+//        val allMatches = matchResponses.flatMap { it.matches }
+//        // 경기중인게 있거나 예정인게 있으면 해당 첫번째 아이템부터 보여준다.
+//        val nextMatch = allMatches.firstOrNull {
+//            it.matchStatus in setOf(
+//                MatchStatus.InPlay,
+//                MatchStatus.Finished,
+//            )
+//        }
+//        if (nextMatch == null) {
+//            null to 0
+//        } else {
+//            nextMatch to allMatches.indexOf(nextMatch)
+//        }
+//    }
+    val firstVisibleIndex = remember(matchResponses) {
+        val allMatches = matchResponses.flatMap { it.matches }
+        // 경기중인게 있거나 예정인게 있으면 해당 첫번째 아이템부터 보여준다.
+        val nextMatch = allMatches.firstOrNull {
+            it.matchStatus in setOf(
+                MatchStatus.InPlay,
+                MatchStatus.Scheduled,
+            )
+        }
+        allMatches.indexOf(nextMatch)
+    }
+    val state = rememberLazyListState(firstVisibleIndex, -140)
     LazyColumn(
+        state = state,
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         matchResponses.forEach { response ->
-            // Match N
-            item {
-                MatchTitle(response = response)
-            }
+            item { MatchTitle(response = response) }
             response.matches.forEachIndexed { index, match ->
                 val prevMatch = response.matches.getOrNull(index - 1)
-                // 이전 경기가 없는 첫 경기이거나, 이전 경기와의 날짜 차이가 있다면 날짜 노출
-                if (prevMatch == null ||
-                    isDateDifference(prevMatch.kstDateTime, match.kstDateTime)
-                ) {
-                    item(key = match.kstDateTime.toString()) {
-                        // Match
-                        Date(match.kstDateTime)
-                    }
-                }
                 item(key = match.id) {
                     MatchItem(
                         match = match,
+                        // 이전 경기가 없는 첫 경기이거나, 이전 경기와의 날짜 차이가 있다면 날짜 노출
+                        isDateVisible = prevMatch == null ||
+                                isDateDifference(prevMatch.kstDateTime, match.kstDateTime),
+                        applyBottomSpace = index == response.matches.size - 1,
                     )
-                    if (index == response.matches.size - 1) {
-                        Spacer(modifier = Modifier.height(30.dp))
-                    }
                 }
             }
             item {
@@ -181,7 +200,7 @@ private fun Date(
     Text(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, top = 12.dp),
+            .padding(start = 20.dp, top = 14.dp),
         text = dateTime.format("yyyy년 MM월 dd일 (E)"),
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
@@ -196,62 +215,78 @@ fun ZonedDateTime.format(pattern: String): String {
 @Composable
 private fun MatchItem(
     match: Match,
+    isDateVisible: Boolean,
+    applyBottomSpace: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier
-            .padding(horizontal = 20.dp)
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = 10.dp,
-        shape = RoundedCornerShape(16.dp),
-    ) {
-        Row(
-            modifier = modifier
+    Column(modifier = modifier) {
+        if (isDateVisible) {
+            Date(match.kstDateTime)
+        }
+        val backgroundColor = if (match.matchStatus == MatchStatus.Finished) {
+            Color(0xffdee2e6)
+        } else {
+            Color.White
+        }
+        Card(
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 8.dp)
                 .fillMaxWidth()
-                .height(IntrinsicSize.Max)
-                .padding(vertical = 22.dp),
-            verticalAlignment = Alignment.CenterVertically,
+                .padding(vertical = 4.dp),
+            elevation = 10.dp,
+            backgroundColor = backgroundColor,
+            shape = RoundedCornerShape(16.dp),
         ) {
             Row(
-                modifier = Modifier
-                    .weight(1f, true)
-                    .padding(horizontal = 12.dp),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max)
+                    .padding(vertical = 22.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End,
             ) {
-                TeamName(
-                    modifier = Modifier.weight(1f, true),
-                    name = match.homeTeam.shortName,
-                    textAlign = TextAlign.End,
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                AsyncImage(
-                    model = match.homeTeam.crest,
-                    contentDescription = "crest",
-                    modifier = Modifier.size(40.dp),
-                )
+                Row(
+                    modifier = Modifier
+                        .weight(1f, true)
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    TeamName(
+                        modifier = Modifier.weight(1f, true),
+                        name = match.homeTeam.shortName,
+                        textAlign = TextAlign.End,
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    AsyncImage(
+                        model = match.homeTeam.crest,
+                        contentDescription = "crest",
+                        modifier = Modifier.size(40.dp),
+                    )
+                }
+                MatchCenterSection(match = match)
+                Row(
+                    modifier = Modifier
+                        .weight(1f, true)
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                ) {
+                    AsyncImage(
+                        model = match.awayTeam.crest,
+                        contentDescription = "crest",
+                        modifier = Modifier.size(40.dp),
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    TeamName(
+                        name = match.awayTeam.shortName,
+                        modifier = Modifier.weight(1f, true),
+                        textAlign = TextAlign.Start,
+                    )
+                }
             }
-            MatchCenterSection(match = match)
-            Row(
-                modifier = Modifier
-                    .weight(1f, true)
-                    .padding(horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-            ) {
-                AsyncImage(
-                    model = match.awayTeam.crest,
-                    contentDescription = "crest",
-                    modifier = Modifier.size(40.dp),
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                TeamName(
-                    name = match.awayTeam.shortName,
-                    modifier = Modifier.weight(1f, true),
-                    textAlign = TextAlign.Start,
-                )
-            }
+        }
+        if (applyBottomSpace) {
+            Spacer(modifier = Modifier.height(30.dp))
         }
     }
 }
