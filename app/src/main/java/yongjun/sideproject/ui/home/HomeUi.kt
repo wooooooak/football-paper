@@ -279,7 +279,7 @@ private fun Table(
                     .padding(horizontal = 8.dp),
             ) {
                 Text(
-                    text = table.team.shortName,
+                    text = table.team.koreanName,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,

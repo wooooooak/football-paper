@@ -1,5 +1,8 @@
 package yongjun.sideproject.ui.match
 
+import android.content.Context
+import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -130,21 +134,6 @@ private fun MatchBodySection(
     matchResponses: List<MatchResponse>,
     modifier: Modifier = Modifier,
 ) {
-//    val (firstVisibleMatch, firstVisibleIndex) = remember(matchResponses) {
-//        val allMatches = matchResponses.flatMap { it.matches }
-//        // 경기중인게 있거나 예정인게 있으면 해당 첫번째 아이템부터 보여준다.
-//        val nextMatch = allMatches.firstOrNull {
-//            it.matchStatus in setOf(
-//                MatchStatus.InPlay,
-//                MatchStatus.Finished,
-//            )
-//        }
-//        if (nextMatch == null) {
-//            null to 0
-//        } else {
-//            nextMatch to allMatches.indexOf(nextMatch)
-//        }
-//    }
     val firstVisibleIndex = remember(matchResponses) {
         val allMatches = matchResponses.flatMap { it.matches }
         // 경기중인게 있거나 예정인게 있으면 해당 첫번째 아이템부터 보여준다.
@@ -157,6 +146,7 @@ private fun MatchBodySection(
         allMatches.indexOf(nextMatch)
     }
     val state = rememberLazyListState(firstVisibleIndex, -140)
+    val context = LocalContext.current
     LazyColumn(
         state = state,
         modifier = modifier.fillMaxSize(),
@@ -173,6 +163,7 @@ private fun MatchBodySection(
                         isDateVisible = prevMatch == null ||
                                 isDateDifference(prevMatch.kstDateTime, match.kstDateTime),
                         applyBottomSpace = index == response.matches.size - 1,
+                        onClick = { context.startYoutube(match) },
                     )
                 }
             }
@@ -181,6 +172,18 @@ private fun MatchBodySection(
             }
         }
     }
+}
+
+fun Context.startYoutube(match: Match) {
+    val intent = Intent(Intent.ACTION_SEARCH).apply {
+        setPackage("com.google.android.youtube")
+        putExtra(
+            "query",
+            "${match.homeTeam.koreanName} ${match.awayTeam.koreanName}",
+        )
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+    startActivity(intent)
 }
 
 fun isDateDifference(dateTime1: ZonedDateTime, dateTime2: ZonedDateTime): Boolean {
@@ -218,6 +221,7 @@ private fun MatchItem(
     isDateVisible: Boolean,
     applyBottomSpace: Boolean,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
     Column(modifier = modifier) {
         if (isDateVisible) {
@@ -241,6 +245,7 @@ private fun MatchItem(
                 modifier = modifier
                     .fillMaxWidth()
                     .height(IntrinsicSize.Max)
+                    .clickable { onClick() }
                     .padding(vertical = 22.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -253,7 +258,7 @@ private fun MatchItem(
                 ) {
                     TeamName(
                         modifier = Modifier.weight(1f, true),
-                        name = match.homeTeam.shortName,
+                        name = match.homeTeam.koreanName,
                         textAlign = TextAlign.End,
                     )
                     Spacer(modifier = Modifier.width(6.dp))
@@ -278,7 +283,7 @@ private fun MatchItem(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     TeamName(
-                        name = match.awayTeam.shortName,
+                        name = match.awayTeam.koreanName,
                         modifier = Modifier.weight(1f, true),
                         textAlign = TextAlign.Start,
                     )
