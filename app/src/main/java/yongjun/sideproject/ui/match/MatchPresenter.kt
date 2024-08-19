@@ -13,7 +13,7 @@ import org.koin.compose.koinInject
 import org.koin.core.annotation.Factory
 import org.koin.core.annotation.Named
 import yongjun.sideproject.domain.model.MatchResponse
-import yongjun.sideproject.domain.usecase.GetMatchResponseUseCase
+import yongjun.sideproject.domain.usecase.GetMatchResponsesUseCase
 import yongjun.sideproject.ui.utils.Async
 import yongjun.sideproject.ui.utils.Loading
 import yongjun.sideproject.ui.utils.Uninitialized
@@ -24,23 +24,23 @@ import yongjun.sideproject.ui.utils.presenterFactory
 fun MatchPresenter(
     screen: MatchScreen,
     navigator: Navigator,
-    getMatchResponseUseCase: GetMatchResponseUseCase = koinInject(),
+    getMatchResponsesUseCase: GetMatchResponsesUseCase = koinInject(),
 ): MatchScreen.State {
     val coroutineScope = rememberCoroutineScope()
-    var getMatchResponseAsync: Async<MatchResponse> by rememberRetained {
+    var getMatchResponsesAsync: Async<List<MatchResponse>> by rememberRetained {
         mutableStateOf(Uninitialized)
     }
 
     LaunchedEffect(Unit) {
-        if (getMatchResponseAsync is Loading) return@LaunchedEffect
-        suspend { getMatchResponseUseCase(screen.competitionId, screen.matchDay) }
+        if (getMatchResponsesAsync is Loading) return@LaunchedEffect
+        suspend { getMatchResponsesUseCase(screen.competitionId, screen.matchDay) }
             .execute(coroutineScope) { async ->
-                getMatchResponseAsync = async
+                getMatchResponsesAsync = async
             }
     }
 
     return MatchScreen.State(
-        getMatchResponseAsync = getMatchResponseAsync,
+        getMatchResponsesAsync = getMatchResponsesAsync,
         matchDay = screen.matchDay,
     ) { event ->
         when (event) {

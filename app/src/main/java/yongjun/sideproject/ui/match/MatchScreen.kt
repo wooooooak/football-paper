@@ -16,7 +16,7 @@ data class MatchScreen(
 ) : Screen, Parcelable {
     data class State(
         val matchDay: Int,
-        val getMatchResponseAsync: Async<MatchResponse> = Uninitialized,
+        val getMatchResponsesAsync: Async<List<MatchResponse>> = Uninitialized,
         val eventSink: (Event) -> Unit = {},
     ) : CircuitUiState
 

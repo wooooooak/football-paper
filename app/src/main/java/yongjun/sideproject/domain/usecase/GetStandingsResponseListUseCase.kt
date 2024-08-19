@@ -20,8 +20,7 @@ class GetStandingsResponseListUseCase(
         val deferredList = COMPETITION_CODES.map { code ->
             async { footballRepository.getStandingsResponse(code) }
         }
-        val standingResponses = deferredList.awaitAll()
-        standingResponses
+        deferredList.awaitAll()
     }
 }
 

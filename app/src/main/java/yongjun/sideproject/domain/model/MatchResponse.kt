@@ -1,5 +1,9 @@
 package yongjun.sideproject.domain.model
 
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
 data class MatchResponse(
     val filters: Filters,
     val resultSet: ResultSet,
@@ -37,7 +41,29 @@ data class Match(
     val score: Score,
     val odds: Odds,
     val referees: List<Referee>,
-)
+) {
+    val kstDateTime: ZonedDateTime
+        get() = run { // UTC 시간대의 ZonedDateTime으로 변환
+            val utcZonedDateTime = ZonedDateTime.parse(utcDate, DateTimeFormatter.ISO_DATE_TIME)
+            // KST 시간대로 변환
+            utcZonedDateTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"))
+        }
+
+    val matchStatus: MatchStatus = when (status) {
+        "SCHEDULED", "TIMED" -> MatchStatus.Scheduled
+        "LIVE", "IN_PLAY" -> MatchStatus.InPlay
+        "PAUSED" -> MatchStatus.Paused
+        "FINISHED" -> MatchStatus.Finished
+        "POSTPONED" -> MatchStatus.Postponed
+        "SUSPENDED" -> MatchStatus.Suspend
+        "CANCELLED" -> MatchStatus.Cancelled
+        else -> MatchStatus.Unknown
+    }
+}
+
+enum class MatchStatus {
+    Scheduled, InPlay, Paused, Finished, Postponed, Suspend, Cancelled, Unknown,
+}
 
 data class Score(
     // AWAY_TEAM, HOME_TEAM, DRAW
