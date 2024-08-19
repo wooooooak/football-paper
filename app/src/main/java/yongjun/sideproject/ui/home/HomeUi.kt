@@ -77,7 +77,6 @@ fun HomeUi(
                     primaryColor = primaryColor,
                     standingsResponses = standingResponses,
                     lastUpdatedAt = state.lastUpdatedAt,
-                    onRefresh = { state.eventSink(HomeScreen.Event.RetryClick) },
                     onGoToMatchClick = { competitionId, matchDay ->
                         state.eventSink(
                             HomeScreen.Event.GoTo(
@@ -119,7 +118,6 @@ private fun StandingsSection(
     lastUpdatedAt: LocalDateTime?,
     standingsResponses: List<StandingResponse>,
     modifier: Modifier = Modifier,
-    onRefresh: () -> Unit = {},
     onGoToMatchClick: (competitionId: Int, matchDay: Int) -> Unit = { _, _ -> },
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -174,10 +172,9 @@ private fun StandingsSection(
                     tables = standingsResponses[page].totalStanding.tables,
                 )
             }
-
         }
 
-        val currentStanding = standingsResponses[pagerState.targetPage]
+        val currentStanding = standingsResponses[pagerState.currentPage]
         val currentMatchDay = standingsResponses[pagerState.targetPage].season.currentMatchday
         FloatingActionButton(
             modifier = Modifier
@@ -189,7 +186,7 @@ private fun StandingsSection(
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 15.dp),
-                text = "match $currentMatchDay",
+                text = "${currentStanding.competition.code} match 보기",
             )
         }
     }
