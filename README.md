@@ -18,7 +18,7 @@ match list에서는 match 클릭 시 youtube로 연동되어 경기 요약을 �
 
 ## 데이터 출처
 [football-data.org](https://www.football-data.org/) 에서 실시간 데이터를 받아온다.
-무료 플랜을 사용 중이기 때문에 API 호출시 **10 request/min** 제한이 으나, 실제로는 약간 더 넉넉히 주는 듯하다.
+무료 플랜을 사용 중이기 때문에 API 호출시 **10 request/min** 제한이 있으나, 실제로는 약간 더 넉넉히 주는 듯하다.
 
 ## 앱 실행 방법
 #### API KEY 발급
