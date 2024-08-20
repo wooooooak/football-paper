@@ -26,7 +26,7 @@ match list에서는 match 클릭 시 youtube로 연동되어 경기 요약을 �
 https://www.football-data.org/pricing 에서 무료 플랜 클릭 후 간단한 회원 가입을 마치면 인증 메일이 날라오고, 인증하면 API-Key가 제공된다.
 물론 여유있으면 유료 플랜해도 되지만, 자주 들여다 볼 앱은 아니라 무료 플랜을 추천한다. 
 
-### API KEY 추가
+#### API KEY 추가
 API KEY를 발급 받았으면 프로젝트 local.properties 파일에 아래와 같이 API-KEY를 추가한다.
 
 `FOOTBALL_API_KEY = "your-api-key"`
