@@ -31,9 +31,27 @@ API KEY를 발급 받았으면 프로젝트 local.properties 파일에 아래와
 
 `FOOTBALL_API_KEY = "your-api-key"`
 
-이제 gradle에서 해당 API-KEY를 읽어와 BUILD CONFIG에 추가시켜 빌드가 될 것이다.
-앱을 실행하면 잘 실행될 것이다(아마도?)
+이제 gradle에서 해당 API-KEY를 읽어오기 때문에 빌드에 성공 후 잘 실행될 것이다(아마도?).
 
+참고) debug 모드로 실행하면 리스트 스크롤이 버벅거릴 수도 있다.
+recomposition이 필요 이상으로 발생하지도 않는데 왜그런지 잘 모르겠다🤷.
+아마도 debug 모드 시 compose 내부 구현 때문이리라 위로해본다.
+앱에 설치하여 사용할 땐 gradle에서 isDebuggable = false를 추가해주어 부드럽게 사용하자😊.
+
+```kotlin
+buildTypes {
+    release {
+        isMinifyEnabled = false
+        proguardFiles(
+            getDefaultProguardFile("proguard-android-optimize.txt"),
+            "proguard-rules.pro",
+        )
+    }
+    debug {
+        isDebuggable = false
+    }
+}
+```
 
 ## 구조 및 기술
 구조는 간단히 Data, Domain, Ui 레이어로 나뉘어져있다.
