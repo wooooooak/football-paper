@@ -241,12 +241,13 @@ private fun Table(
     table: Table,
     modifier: Modifier = Modifier,
 ) {
-    val backgroundColor = when (table.position) {
-        1 -> Color(0xfffd7e14)
-        2 -> Color(0xffffa94d)
-        3 -> Color(0xffffc078)
-        4 -> Color(0xffffe8cc)
-        else -> MaterialTheme.colors.surface
+    val backgroundColor = when {
+        table.playedGames == 0 -> Color.White
+        table.position == 1 -> Color(0xfffd7e14)
+        table.position == 2 -> Color(0xffffa94d)
+        table.position == 3 -> Color(0xffffc078)
+        table.position == 4 -> Color(0xffffe8cc)
+        else -> Color.White
     }
     Card(
         modifier = modifier.padding(horizontal = 16.dp),
