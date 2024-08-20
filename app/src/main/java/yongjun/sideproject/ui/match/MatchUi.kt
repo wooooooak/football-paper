@@ -49,6 +49,7 @@ import yongjun.sideproject.domain.mock.ResponseMock
 import yongjun.sideproject.domain.model.Match
 import yongjun.sideproject.domain.model.MatchResponse
 import yongjun.sideproject.domain.model.MatchStatus
+import yongjun.sideproject.ui.common.CommonErrorScreen
 import yongjun.sideproject.ui.utils.Fail
 import yongjun.sideproject.ui.utils.Loading
 import yongjun.sideproject.ui.utils.Success
@@ -76,9 +77,11 @@ fun MatchUi(
         val primaryColor = Color(0xffff8787)
         when (state.getMatchResponsesAsync) {
             is Fail -> {
-                Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.getMatchResponsesAsync.error.toString())
-                }
+                CommonErrorScreen(
+                    exception = state.getMatchResponsesAsync.error,
+                    onRetryClick = { state.eventSink(MatchScreen.Event.FetchMatch) },
+                    onBackClick = { state.eventSink(MatchScreen.Event.Pop) },
+                )
             }
 
             is Loading, Uninitialized -> {

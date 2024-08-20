@@ -31,12 +31,16 @@ fun MatchPresenter(
         mutableStateOf(Uninitialized)
     }
 
-    LaunchedEffect(Unit) {
-        if (getMatchResponsesAsync is Loading) return@LaunchedEffect
+    fun fetchMatch() {
+        if (getMatchResponsesAsync is Loading) return
         suspend { getMatchResponsesUseCase(screen.competitionId, screen.matchDay) }
             .execute(coroutineScope) { async ->
                 getMatchResponsesAsync = async
             }
+    }
+
+    LaunchedEffect(Unit) {
+        fetchMatch()
     }
 
     return MatchScreen.State(
@@ -45,6 +49,7 @@ fun MatchPresenter(
     ) { event ->
         when (event) {
             MatchScreen.Event.Pop -> navigator.pop()
+            MatchScreen.Event.FetchMatch -> fetchMatch()
         }
     }
 }

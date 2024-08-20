@@ -78,8 +78,9 @@ fun HomePresenter(
         getStandingResponsesAsync = getStandingResponsesAsync,
     ) { event ->
         when (event) {
-            HomeScreen.Event.RetryClick -> fetch()
+            HomeScreen.Event.FetchStandings -> fetch()
             is HomeScreen.Event.GoTo -> navigator.goTo(event.screen)
+            HomeScreen.Event.Pop -> navigator.pop()
         }
     }
 }

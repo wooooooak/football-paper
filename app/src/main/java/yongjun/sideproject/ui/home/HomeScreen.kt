@@ -19,8 +19,9 @@ data object HomeScreen : Screen, Parcelable {
     ) : CircuitUiState
 
     sealed interface Event : CircuitUiEvent {
-        data object RetryClick : Event
+        data object FetchStandings : Event
         data class GoTo(val screen: Screen) : Event
+        data object Pop : Event
     }
 
 }

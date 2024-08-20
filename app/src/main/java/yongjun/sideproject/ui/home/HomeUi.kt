@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.FloatingActionButton
@@ -52,6 +51,7 @@ import org.koin.core.annotation.Named
 import yongjun.sideproject.domain.mock.ResponseMock
 import yongjun.sideproject.domain.model.StandingResponse
 import yongjun.sideproject.domain.model.Table
+import yongjun.sideproject.ui.common.CommonErrorScreen
 import yongjun.sideproject.ui.match.MatchScreen
 import yongjun.sideproject.ui.utils.Fail
 import yongjun.sideproject.ui.utils.Loading
@@ -91,15 +91,14 @@ fun HomeUi(
             }
 
             state.getStandingResponsesAsync is Fail -> {
-                Column(
+                CommonErrorScreen(
+                    exception = state.getStandingResponsesAsync.error,
                     modifier = modifier
                         .padding(innerPadding)
                         .statusBarsPadding(),
-                ) {
-                    Button(onClick = { state.eventSink(HomeScreen.Event.RetryClick) }) {
-                        Text(text = "retry!!!!!")
-                    }
-                }
+                    onRetryClick = { state.eventSink(HomeScreen.Event.FetchStandings) },
+                    onBackClick = { state.eventSink(HomeScreen.Event.Pop) },
+                )
             }
 
             state.getStandingResponsesAsync is Loading || state.getStandingResponsesAsync == Uninitialized -> {

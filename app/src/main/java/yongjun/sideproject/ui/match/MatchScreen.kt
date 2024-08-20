@@ -22,5 +22,6 @@ data class MatchScreen(
 
     sealed interface Event : CircuitUiEvent {
         data object Pop : Event
+        data object FetchMatch : Event
     }
 }
